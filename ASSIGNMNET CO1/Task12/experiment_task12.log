@@ -1,0 +1,24 @@
+PS C:\CN_CSA0715\ASSIGNMNET CO1\Task12> python task12_design_challenge.py
+=== CO1 TASK 12: DAY-4 DESIGN CHALLENGE (50 AGVs + PRIVATE 5G) ===
+A. Impact Analysis:
+   - Added AGV control traffic : 50 x 200B / 2ms = 40.00 Mbps (strict <= 10 ms deadline, 0 missed frames)
+   - Raw plant traffic (8 lines + 50 AGVs): 1305.92 Mbps (exceeds single 1G uplink by 305.92 Mbps)
+   - With edge NVR (5% CCTV) + 50 AGVs    : 576.32 Mbps
+   - Impacted subsystems: Shop-floor wireless (Wi-Fi -> 5G URLLC), Core uplink (1G -> 2x10G LACP), Error control (HARQ+CRC+DAPS).
+
+B. Testing the Original Design Against 50 Moving AGVs:
+   - Wi-Fi handover (150 ms, 39 HOs/1.2km) = 5,850 ms total blackout -> FAILS 10 ms AGV deadline by 15x per HO.
+   - Even 802.11r fast roaming (20-50 ms) + CSMA/CA contention + 15 dB welder EMI drops control packets.
+   - Verdict: Original Wi-Fi office design CANNOT serve 50 moving AGVs -> REDESIGN required.
+
+C. Adapted / Redesigned Architecture:
+   - AGVs & mobile robots : Private 5G SA URLLC slice (300m cells, DAPS < 1 ms HO, < 5 ms air latency, HARQ FEC).
+   - Fixed welding robots : Cat6A S/FTP wired 1000BASE-T Full-Duplex (blocks EMI).
+   - Office & diagnostics : Wi-Fi 6 (802.11ax) on non-overlapping channels + VLANs.
+   - Backbone & WAN       : Dual 10G OS2 SMF LACP core + DiffServ EF priority + 400 km MPLS WAN (SR W>=335).
+
+D. Evidence-Based Defence:
+   - Eliminates 5.85 s Wi-Fi roaming outage -> < 1 ms DAPS handover, guaranteeing 10 ms AGV control loop.
+   - 2x10G LACP core provides 20 Gbps vs 1.31 Gbps worst-case raw load (6.5% utilisation, zero queueing).
+
+Saved revised topology diagram: C:\Users\19252\.gemini\antigravity\scratch\CN_CSA0715\ASSIGNMNET CO1\Task12\task12_revised_topology.png

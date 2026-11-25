@@ -1,0 +1,27 @@
+PS C:\CN_CSA0715\ASSIGNMNET CO1\Task05> python task05_agv_handover.py
+=== CO1 TASK 5: WI-FI 6 vs PRIVATE 5G FOR MOVING AGVs ===
+Route length: 1200 m | AGV speed: 2.0 m/s | Trip duration: 600 s
+  Wi-Fi (30 m AP spacing, 150 ms HO) : 39 handovers | Unreachable = 5.85 s (0.97%)
+  5G    (300 m cell, 20 ms HO)       :  3 handovers | Unreachable = 0.06 s (0.0100%)
+  10 ms deadline check: Both 150 ms Wi-Fi HO and 20 ms break-before-make 5G HO exceed 10 ms;
+  5G Dual Active Protocol Stack (DAPS / make-before-break) achieves ~0 ms interruption.
+
+5G Service Class Mapping:
+  - AGVs & Robot controllers -> URLLC (Ultra-Reliable Low-Latency Communications, <1-10 ms, 99.999%)
+  - CCTV video streams       -> eMBB  (Enhanced Mobile Broadband, high throughput ~96 Mbps/line)
+  - Temperature/Vib sensors  -> mMTC  (Massive Machine-Type Communications, high connection density)
+
+Short-Range / LPWAN Technologies in the Plant:
+  - Bluetooth (BLE): Wearable/handheld technician diagnostics (<10-30 m).
+  - Zigbee         : Low-power mesh ambient temperature/lighting sensors.
+  - LoRa / LoRaWAN : Yard/warehouse environmental sensors over kilometres (battery life in years).
+
+Wi-Fi 6 + 802.11r (Fast BSS Transition):
+  - Cuts handover from ~150 ms to ~20-50 ms, still risky for strict 10 ms AGV deadline
+    due to unlicensed 2.4/5 GHz contention, welding EMI, and roaming misses.
+
+--- Alternative Concept: LoRaWAN (5 kbps) for 600 Sensors ---
+  Required sensor throughput : 240.0 kbps (600 x 50 B/s)
+  Single LoRa gateway cap    : 5.0 kbps (oversubscribed 48x!)
+  Decision: High-rate vibration sensors (50 B/s) MUST stay on Wi-Fi/wired/5G mMTC;
+            only slow telemetry (e.g. temperature every 60 s) suits LoRaWAN.

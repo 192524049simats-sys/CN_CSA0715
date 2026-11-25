@@ -1,0 +1,19 @@
+PS C:\CN_CSA0715\ASSIGNMNET CO1\Task09> python task09_sliding_window.py
+Campus LAN, 200 m, 1 Gbps       a =    0.08 stop-and-wait  85.7% W=7 100.0% W=127 100.0%
+City fibre, 50 km, 1 Gbps       a =   20.83 stop-and-wait   2.3% W=7  16.4% W=127 100.0%
+Satellite, 36,000 km, 10 Mbps   a =  150.00 stop-and-wait   0.3% W=7   2.3% W=127  42.2%
+
+--- Follow-up: Satellite 100% Utilisation Window ---
+  a = 150.00 -> smallest integer window W >= 1 + 2a = 301
+
+--- Head-Office Link: 400 km Fibre @ 1 Gbps, 1,500 B frames ---
+  Tx time = 12.00 us | Prop time = 2.00 ms | a = 166.67
+  Stop-and-Wait U = 0.299% (2.99 Mbps)
+  Min window for 100% U = 335 frames (1 + 2a = 334.33)
+  Seq-number bits: Go-Back-N >= 9 bits (2^k - 1 >= 335) | Selective Repeat >= 10 bits (2^(k-1) >= 335)
+  SR vs GBN: Selective Repeat resends only lost frames (1 vs up to W), costing W frames of out-of-order RX buffer.
+  HDLC/PPP framing: Uses 0x7E (01111110) start/end flags with bit stuffing (HDLC) or byte stuffing 0x7D (PPP).
+
+--- Alternative Concept: Selective Repeat W=64 on 400 km Link ---
+  Utilisation = 19.14% | Effective throughput = 191.43 Mbps
+  Receiver buffer required = 64 x 1,500 B = 96,000 bytes (93.75 KB)

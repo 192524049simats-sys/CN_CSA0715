@@ -1,0 +1,18 @@
+PS C:\CN_CSA0715\ASSIGNMNET CO1\Task08> python task08_hamming.py
+codeword : 0110011
+error at None: syndrome 0, data 1011
+error at 5   : syndrome 5, data 1011
+
+--- Follow-up: Double-bit flip (positions 3 and 5) ---
+  Corrupted rx=0100111 -> syndrome 6, miscorrected data=0101 (WRONG; expected 1011!)
+
+--- 16-bit Sensor Word Hamming Sizing ---
+  m = 16 bits -> smallest r with 2^r >= m+r+1 is r = 5 (2^5=32 >= 22)
+  Codeword = 21 bits | Overhead = 5/21 = 23.81%
+  Min Hamming distance d_min = 3 -> detects 2 errors, corrects 1 error
+  Received 0110111 -> syndrome 5 (bit 5 flipped), corrected data = 1011
+
+--- Alternative Concept: BER = 1e-3 (Hamming FEC vs 40 ms ARQ) ---
+  Hamming(21,16) FEC : 21 bits/reading | >=2-bit fail prob = 0.0207% | avg extra delay = 0.0083 ms
+  ARQ (16b + parity) : 17.27 bits/reading | frame error prob = 1.59% | avg extra delay = 0.645 ms (tail = 40 ms)
+  Verdict: FEC suits noisy real-time radio/video/5G links because it eliminates 40 ms retransmission stalls.

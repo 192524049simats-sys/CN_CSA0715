@@ -1,0 +1,41 @@
+PS C:\CN_CSA0715\ASSIGNMNET CO1\Task06> python task06_ethernet_port.py
+=== CO1 TASK 6: ETHERNET PORT REPORT DIAGNOSIS ===
+  Speed             : 100Mb/s
+  Duplex            : Half
+  Auto-negotiation  : off
+  Link detected     : yes
+  rx_errors         : 2381
+  late_collisions   : 412
+  crc_errors        : 1907
+
+1. Root Cause Diagnosis (Duplex Mismatch):
+  - late_collisions (412) : Collision detected AFTER transmitting 512 bits (64B slot time);
+    signature symptom of Half-Duplex PC receiving simultaneous frames from a Full-Duplex switch.
+  - crc_errors (1907)     : Corrupted frames arriving mid-transmission or damaged by EMI.
+  - Switch side           : Gigabit switch port set to Auto-negotiation defaults to Half-Duplex when
+    parallel-detecting a forced 100M/Half PC, OR switch was forced Full-Duplex while PC is Half.
+
+2. Corrective Configuration Commands:
+  Linux   : sudo ethtool -s eth0 speed 1000 duplex full autoneg on
+            (verify with: ethtool eth0 && ethtool -S eth0)
+  Windows : Set-NetAdapterAdvancedProperty -Name 'Ethernet' -DisplayName 'Speed & Duplex' -DisplayValue 'Auto Negotiation'
+
+3. MAC Address Analysis:
+  - 01:00:5e:0a:01:02 -> GROUP (IPv4 Multicast) MAC: LSB of first byte (0x01) is 1,
+    and 01:00:5e prefix maps IPv4 multicast (e.g. 224.10.1.2 / 234.10.1.2).
+  - 3c:52:82:4e:11:07 -> First 3 bytes (3c:52:82) are the OUI identifying the NIC vendor (HP Inc.).
+
+4. Jumbo Frames (9,000 bytes) for CCTV Storage Server:
+  - Benefit: Cuts framing/interrupt overhead (6x fewer headers/IRQs for large sequential video writes).
+  - Requirement: End-to-end MTU=9000 must be configured on server NIC, ALL switches in path, and storage NAS;
+    otherwise frames are dropped or fragmented.
+
+5. Alternative Concept Analysis: Industrial Switch Ring (MRP/RSTP) vs Star:
+  - Ring (IEC 62439-2 MRP / Rapid Ring): Single cable cut recovers in <10-50 ms; ZERO devices lose connection.
+  - Star of switches: Cut on uplink disconnects entire downstream switch (~1-30 s only if redundant STP link exists).
+
+6. Live Host NIC Status Check (PowerShell Get-NetAdapter):
+Name     Status       LinkSpeed FullDuplex MacAddress       
+----     ------       --------- ---------- ----------       
+Ethernet Disconnected 0 bps                D0-C1-B5-35-E6-68
+Wi-Fi    Up           1.4 Gbps  False      DC-97-BA-E9-08-A9

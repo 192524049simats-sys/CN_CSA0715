@@ -1,0 +1,30 @@
+PS C:\CN_CSA0715\ASSIGNMNET CO1\Task02> python task02_domains_diagram.py
+=== CO1 TASK 2: COLLISION & BROADCAST DOMAINS + STANDARDS ===
+Original Contractor Drawing:
+  - Collision Domains : 17 (3 Hubs + 1 SW1-R1 + 1 R1-SW2 + 12 Phone ports)
+  - Broadcast Domains : 2 (Router G0/0 LAN and Router G0/1 Voice LAN)
+
+OSI Layer & Hub Behaviour:
+  - Hub       : Layer 1 (Physical) - repeats electrical signals to all ports; no MAC filtering/buffering -> cannot isolate collisions.
+  - Switch    : Layer 2 (Data Link) - buffers frames, learns MACs, forwards per port -> 1 collision domain per port.
+  - Router    : Layer 3 (Network) - terminates L2 broadcasts, routes IP packets -> separates broadcast domains.
+  - PCs/Phones: Layers 1-7 (End Hosts).
+
+Point-to-Point vs Multipoint Links:
+  - Point-to-Point: Hub-to-Switch ports, Switch1-to-G0/0, G0/1-to-Switch2, Switch2-to-each IP Phone.
+  - Multipoint    : Shared repeater bus inside each Hub connecting 8 PCs in half-duplex CSMA/CD.
+
+Standards & Governing Bodies:
+  - Ethernet   | IEEE 802.3                   | IEEE (Institute of Electrical and Electronics Engineers)
+  - Wi-Fi      | IEEE 802.11                  | IEEE
+  - IPv4       | RFC 791                      | IETF (Internet Engineering Task Force)
+  - OSI Model  | ISO/IEC 7498-1               | ISO (International Organization for Standardization)
+  - 5G NR      | 3GPP Rel-15/16/17 / IMT-2020 | 3GPP & ITU-R
+
+--- Alternative Concept Analysis: Replace 3 Hubs with 3 Switches ---
+  New Collision Domains: 41 (24 PC ports + 3 SW-to-SW uplinks + 2 router links + 12 phone ports)
+  New Broadcast Domains: 2 (unchanged; L2 switches still flood broadcasts across all 24 PCs)
+  Fixes     : Eliminates CSMA/CD collisions on PCs, enables full-duplex 100/1000 Mbps per PC.
+  Does NOT  : Does not isolate broadcast storms or provide VLAN segmentation without managed L2/VLANs.
+
+Saved topology diagram: C:\Users\19252\.gemini\antigravity\scratch\CN_CSA0715\ASSIGNMNET CO1\Task02\task02_domains_diagram.png

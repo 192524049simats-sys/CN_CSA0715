@@ -1,0 +1,24 @@
+PS C:\CN_CSA0715\ASSIGNMNET CO1\Task04> python task04_nyquist_shannon.py
+Telephone line   Shannon limit       0.03 Mbps
+Cat6 pair        Shannon limit    3321.96 Mbps
+Wi-Fi 6 channel  Shannon limit    1329.50 Mbps
+Nyquist, 3,100 Hz with 4 levels: 12.4 kbps
+
+--- Follow-up: SNR needed on 3,100 Hz telephone line for 56 kbps ---
+  Required SNR ratio : 274,131.93
+  Required SNR (dB)  : 54.38 dB (Unrealistic for analog POTS loop; typically ~30-35 dB)
+
+--- Plant Cable Runs & Trap Analysis ---
+  (a) Robot cell near welders (85 m)  -> Cat6A S/FTP (shielded; <100 m limit; blocks arc-welding EMI)
+  (b) Office to shop-floor (140 m)   -> Multimode Fibre OM3/OM4 (TRAP: 140 m > 100 m Cat6/Cat6A limit!)
+  (c) Shop floor to DC (550 m)       -> Single-mode Fibre (OS2; 550 m exceeds 10G OM3/OM4 300-400 m limit)
+  (d) Plant to head office (400 km)  -> Leased Line / Carrier MPLS over Single-mode Fibre
+
+  250 MHz cable @ 40 dB SNR (clean)  : 3321.96 Mbps
+  250 MHz cable @ 15 dB SNR (welders): 1256.95 Mbps (-62.2% capacity drop)
+  Why real speed < Shannon limit     : Protocol headers, guard bands, attenuation, ISI, finite modulation/FEC.
+
+--- Alternative Concept: Wi-Fi 6 (160 MHz, 15 dB SNR near welders) ---
+  Shannon capacity @ 15 dB           : 804.45 Mbps (theoretical ceiling)
+  Verdict: NOT acceptable for 10 ms robot commands — CSMA/CA contention + arc-welding EMI
+           induce retries and non-deterministic latency > 10 ms.

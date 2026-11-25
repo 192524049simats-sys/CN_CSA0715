@@ -1,0 +1,29 @@
+PS C:\CN_CSA0715\ASSIGNMNET CO1\Task01> python task01_traffic_sizing.py
+=== CO1 TASK 1: SMART MANUFACTURING PLANT TRAFFIC SIZING ===
+  Robot controllers (40 x 200B / 2ms)   :    32.00 Mbps | Delay req: <= 10 ms (strict)
+  Vibration sensors (600 x 50B / s)     :     0.24 Mbps | Delay req: ~1 s (tolerant)
+  CCTV cameras (24 x 4 Mbps)            :    96.00 Mbps | Delay req: ~100-200 ms (buffered)
+  Office users (150 x 10% x 2 Mbps)     :    30.00 Mbps | Delay req: ~200-500 ms (elastic)
+
+Total traffic (1 production line)     : 158.24 Mbps
+Total traffic (8 production lines)    : 1265.92 Mbps (1.2659 Gbps)
+Single 1 Gbps uplink sufficient?      : NO (oversubscribed by 265.92 Mbps)
+
+Delay vs Volume Finding:
+  - Highest data volume   : CCTV cameras (96.00 Mbps/line = 60.67% of line traffic)
+  - Strictest delay req   : Robot controllers (<= 10 ms deadline, only 32.00 Mbps/line)
+  - Shared FIFO queue risk: Continuous 768 Mbps CCTV + 518.4 Mbps other saturates 1 Gbps,
+    causing tail drops and >100 ms queueing delay that violates the 10 ms robot deadline.
+
+100 ms Delay Harm Ranking (Most to Least Harmful):
+  1. Robot controllers  -> Safety/collision risk; 50 control cycles missed (deadline 10 ms).
+  2. Vibration sensors  -> Delayed fault/anomaly alert; slight buffer risk on high-rate bursts.
+  3. CCTV cameras       -> Live monitoring lag/jitter; tolerable via short playback buffer.
+  4. Office users       -> Mild ERP/email sluggishness; fully elastic TCP traffic.
+
+--- Alternative Concept Analysis: Motion-Triggered CCTV (5% active) ---
+  CCTV traffic (5% of 96 Mbps)        : 4.80 Mbps/line
+  Revised 1-line total                : 67.04 Mbps
+  Revised 8-line total                : 536.32 Mbps (53.6% of 1 Gbps)
+  Verdict: 1 Gbps uplink is NO LONGER the continuous average bottleneck, though QoS
+           (DiffServ EF) is still required so simultaneous motion bursts do not delay robots.

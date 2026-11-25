@@ -1,0 +1,31 @@
+PS C:\CN_CSA0715\ASSIGNMNET CO1\Task03> python task03_encapsulation.py
+Application  adds HTTP -> 19 bytes
+Transport    adds TCP  -> 25 bytes
+Network      adds IP   -> 30 bytes
+Data link    adds ETH  -> 40 bytes
+on the wire: [ETH|[IP|[TCP|[HTTP|GET /results]]]|FCS]
+delivered  : GET /results
+overhead   : 28 bytes for 12 bytes of data
+
+--- Follow-up: 1,400-byte payload comparison ---
+Application  adds HTTP -> 1407 bytes
+Transport    adds TCP  -> 1413 bytes
+Network      adds IP   -> 1418 bytes
+Data link    adds ETH  -> 1428 bytes
+12-byte payload   : total 40 B, overhead 28 B (70.00%)
+1400-byte payload : total 1428 B, overhead 28 B (1.96%)
+
+--- Captured Modbus Robot Frame Analysis ---
+  Line 1 (Ethernet II) -> Layer 2 (Data Link), PDU: Frame, 14B hdr + 4B FCS = 18B
+  Line 2 (IPv4)        -> Layer 3 (Network),   PDU: Packet, 20B hdr, TTL 64 -> 61 => 3 routers crossed
+  Line 3 (TCP)         -> Layer 4 (Transport), PDU: Segment, 20B hdr (Src 51522 -> Dst 502 Modbus)
+  Line 4 (Data)        -> Layer 7 (App),       PDU: Data/Message, 12B payload
+  Wire size (12B cmd)  : 70 bytes | Overhead = 58/70 = 82.86%
+  Wire size (1400B cam): 1458 bytes | Overhead = 58/1458 = 3.98%
+  Fault mapping        : (a) Wrong MAC -> L2 Data Link; (b) TTL=0 -> L3 Network; (c) Port closed -> L4 Transport
+
+--- Alternative Concept: Raw Ethernet (EtherType 0x8892, no IP/TCP) ---
+  Header bytes saved per command        : 40 bytes (20B IP + 20B TCP)
+  Logical wire size                     : 70 B -> 30 B (padded to 64 B IEEE 802.3 min frame)
+  Commands/sec freed (100 Mbps, 70B->64B): 16,741 cmd/s (or 238,095 cmd/s unpadded)
+  Lost by dropping IP/TCP               : No L3 routing across subnets/plants, no congestion/flow control, no TCP ordering.

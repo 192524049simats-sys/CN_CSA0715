@@ -1,0 +1,46 @@
+PS C:\CN_CSA0715\ASSIGNMNET CO1\Task10> python task10_delay_measurements.py
+=== CO1 TASK 10: DELAY ANALYSIS & REAL NETWORK MEASUREMENT ===
+1. Given 400 km Head-Office Traceroute Analysis:
+   - Expected propagation delay : 2.00 ms one-way | 4.00 ms RTT
+   - Measured RTT to 10.200.0.10: 12.63 ms avg (min 12.4 ms)
+   - Propagation share of RTT   : 31.7% (remaining 8.63 ms = routing/queuing/tx)
+   - Hop 3 (38.2 ms spike)      : Control-plane ICMP TTL-exceeded rate-limiting/CPU delay (NOT a data-plane fault; Hop 4 is 11.5 ms).
+   - Hop 5 (* * *)              : Router drops ICMP probes/ACL blocks TTL-exceeded (NOT a fault; Hop 6 responds cleanly).
+   - Largest delay jump         : Hop 4 (103.21.8.17), jumping from ~4.1 ms (Hop 3) to ~11.8 ms (+7.7 ms, long-haul WAN segment).
+
+2. Live Ping Measurement (ping -n 4 1.1.1.1):
+Pinging 1.1.1.1 with 32 bytes of data:
+Reply from 1.1.1.1: bytes=32 time=13ms TTL=59
+Reply from 1.1.1.1: bytes=32 time=10ms TTL=59
+Reply from 1.1.1.1: bytes=32 time=7ms TTL=59
+Reply from 1.1.1.1: bytes=32 time=9ms TTL=59
+
+Ping statistics for 1.1.1.1:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 7ms, Maximum = 13ms, Average = 9ms
+
+3. Live Traceroute Measurement (tracert -d -h 10 -w 1000 1.1.1.1):
+Tracing route to 1.1.1.1 over a maximum of 10 hops
+
+  1    63 ms    62 ms     7 ms  192.168.1.1 
+  2     7 ms     8 ms     7 ms  182.65.64.1 
+  3     7 ms     7 ms     9 ms  125.17.96.17 
+  4    10 ms     8 ms     7 ms  182.79.208.203 
+  5    13 ms     9 ms     *     182.79.161.171 
+  6    13 ms     9 ms    11 ms  162.158.52.19 
+  7    13 ms     9 ms    12 ms  1.1.1.1 
+
+Trace complete.
+
+4. Real TCP+HTTP Probe to example.com (port 80) — Layer Headers Dissected:
+   - DNS lookup time   : 99.36 ms -> example.com = 104.20.23.154
+   - TCP 3-way HS RTT  : 13.84 ms (192.168.1.8:59319 -> 104.20.23.154:80)
+   - L2 Ethernet II    : 14B hdr + 4B FCS (Src Host NIC -> Default Gateway MAC)
+   - L3 IPv4           : 20B hdr (Src 192.168.1.8 -> Dst 104.20.23.154, Proto=6 TCP, TTL=128 Win)
+   - L4 TCP            : 20B hdr (SrcPort=59319 -> DstPort=80, SYN/SYN-ACK/ACK)
+   - L7 HTTP response  : HTTP/1.1 200 OK | Date: Wed, 25 Nov 2026 18:03:21 GMT | Content-Type: text/html; charset=utf-8 | Connection: close
+
+5. Alternative Concept Analysis: Continuous SNMP/NetFlow vs Occasional Ping/Traceroute:
+   - SNMP/NetFlow detects interface utilisation, queue drops, and asymmetric congestion within 10-60 s,
+     distinguishing true packet loss from Hop 5 ICMP filtering (* * *). Occasional ping only sees instantaneous RTT.

@@ -1,0 +1,22 @@
+PS C:\CN_CSA0715\ASSIGNMNET CO1\Task07> python task07_crc_checksum.py
+transmitted: 1101011011100
+no error   : True
+1-bit error: False
+3-bit burst: False
+
+--- Follow-up: Received frame 1101011011101 ---
+  Remainder of 1101011011101 / 1011 = 001 -> REJECTED
+  Undetectable error E(x)=x^3+x+1 (1011000000000) -> check=True (MISSED!)
+  Max guaranteed burst detection for degree-3 CRC: <= 3 bits.
+
+--- 2D Even Parity (4x4 block ['1010', '0110', '1100', '0011']) ---
+  Row parities: 0000 | Col parities: 0011
+  Missed 4-bit error: flipping bits (0,0), (0,3), (3,0), (3,3) keeps all row/col parities even.
+
+--- Internet Checksum (4500, 0073, 0000, 4000) ---
+  Sum = 0x8573 | 1's Complement Checksum = 0x7A8C
+
+--- Alternative Concept: Even Parity vs CRC-3 (1011) ---
+  2-bit burst (110...0): CRC-3 check=False (CATCHES), Even-parity catches=False (MISSES)
+  4-bit mult (11101...): CRC-3 check=True (MISSES), Even-parity catches=False (MISSES)
+  3-bit mult (10110...): CRC-3 check=True (MISSES), Even-parity catches=True (CATCHES)
