@@ -1,0 +1,22 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO4\Task05> python task05_vlans_acl.py
+=== CO4 TASK 5: SEPARATE THE GUESTS FROM THE OFFICE (VLANs & ACL) ===
+5.1 IEEE 802.1Q Trunk Tag Overhead:
+  - 802.1Q inserts a 4-byte tag (2B TPID 0x8100 + 2B TCI: 3b PCP, 1b DEI, 12b VID) into the Ethernet header.
+  - Standard max frame increases from 1,518 B to 1,522 B (0.26% overhead at 1500 B MTU).
+
+5.2 Switch & Router Config Summary (see sw_admin_vlans.cfg & r_admin_roas_acl.cfg):
+  - SW-Admin: VLAN 10 (Office: Fa0/1-12), VLAN 20 (CCTV: Fa0/13-20), VLAN 30 (Guest-WiFi: Fa0/21-24).
+  - Trunk Gi0/1: switchport mode trunk; switchport trunk allowed vlan 10,20,30.
+  - R-Admin: Router-on-a-stick subinterfaces G0/0.10, .20, .30 + ACL GUEST_INTERNET_ONLY on .30 inbound.
+
+5.3 Reachability Matrix & Broadcast Domain Counts:
+  - PC-Guest (VLAN 30)   -> PC-Office (VLAN 10) : L2 Pre-ROAS: FAIL (isolated) | Post-ROAS+ACL: DENY (blocked by GUEST_INTERNET_ONLY ACL)
+  - PC-Guest (VLAN 30)   -> CCTV (VLAN 20)      : Post-ROAS+ACL: DENY (blocked by GUEST_INTERNET_ONLY ACL)
+  - PC-Guest (VLAN 30)   -> Internet (8.8.8.8)  : Post-ROAS+ACL: PERMIT (Internet / external only)
+  - PC-Office (VLAN 10)  -> CCTV (VLAN 20)      : Post-ROAS+ACL: PERMIT (Inter-VLAN routing enabled)
+  - Broadcast domains BEFORE VLANs: 1 | AFTER VLANs (10, 20, 30): 3 independent broadcast domains.
+
+--- Alternative Concept Analysis: Separate Physical Switch + ISP Line for Guests ---
+  - Cost: Requires extra switch, cabling, router, and second ISP subscription (~2x hardware/ISP opex).
+  - Isolation: Complete physical air-gap (eliminates VLAN-hopping / misconfiguration risks).
+  - Worth it when: High-compliance banking/defence/R&D networks mandate zero shared hardware with public guests.

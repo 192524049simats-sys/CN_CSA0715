@@ -1,0 +1,22 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO4\Task02> python task02_hospital_topologies.py
+bus   links  5  max ports on one device 2  single-link failures survived 0/5
+ring  links  6  max ports on one device 2  single-link failures survived 6/6
+star  links  6  max ports on one device 6  single-link failures survived 0/6
+mesh  links 15  max ports on one device 5  single-link failures survived 15/15
+
+--- Scaling Comparison at n = 20 Offices ---
+  Star (n=20)      :  20 links (O(n) linear growth)
+  Full Mesh (n=20) : 190 links (O(n^2) = n*(n-1)/2 -> 9.5x more links!)
+
+--- Hospital 5-Block Cost & Failure Analysis (Rs 60,000/fibre + 2 x Rs 18,000/port = Rs 96,000/link) ---
+  Bus (5 blocks)                               :  4 links |  8 ports | Rs 384,000 | Any cut isolates Emergency or OT
+  Ring (5 blocks)                              :  5 links | 10 ports | Rs 480,000 | Survives ANY single cut (0 disconnected)
+  Star (centred on DC)                         :  5 links | 10 ports | Rs 480,000 | Cut to Emergency or OT isolates it immediately
+  Full Mesh (5 blocks)                         : 10 links | 20 ports | Rs 960,000 | Survives up to 3 cuts
+  Hybrid Core (DC-Emerg-OT ring + 2/3 radials) :  6 links | 12 ports | Rs 576,000 | Emerg & OT survive any 1 cut (connected to DC)
+
+--- Alternative Concept Analysis: 5-Block Fibre Ring vs Hybrid ---
+  - 5-Block Ring (5 links = Rs 480,000, 10 ports) is actually CHEAPER than 6-link hybrid (Rs 576,000)
+    and survives ANY 1 cable cut (including Outpatient/Lab/Admin!), while failing on 2 cuts that bracket a block.
+  - Hybrid (DC-Emerg-OT triangle + radials = 6 links, Rs 576,000) adds extra hops=1 direct paths to DC,
+    and survives 2 cuts if 1 cut is on a radial + 1 on the triangle, whereas 5-block ring has longer worst-case hop count (2 vs 1).

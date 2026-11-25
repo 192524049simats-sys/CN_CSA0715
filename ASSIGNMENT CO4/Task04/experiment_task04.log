@@ -1,0 +1,27 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO4\Task04> python task04_aloha_wlan_wan.py
+=== CO4 TASK 4: SHARED MEDIA, WIRELESS LANs & WANs BY THE NUMBERS ===
+4.1 Multiple Access:
+  - Pure ALOHA max throughput    : 1/(2e) = 18.39% (0.184)
+  - Slotted ALOHA max throughput : 1/e    = 36.79% (0.368)
+  - 10 Mbps, 2,500 m, v=2e8 m/s  : prop = 12.50 us, 2*prop = 25.00 us
+  - Min CSMA/CD frame size       : 250 bits (31.25 B; IEEE 802.3 pads to 512 bits / 64 B for repeaters)
+  - Full-duplex switched Ethernet: Dedicated TX/RX wire pairs -> zero collisions -> CSMA/CD disabled.
+  - Wi-Fi (802.11): Shared half-duplex RF medium -> cannot hear collisions while transmitting -> uses CSMA/CA.
+
+4.2 Waiting Hall Wireless Plan (300 Phones):
+  - Deploy 6 Wi-Fi 6 (802.11ax) ceiling APs (~50 phones/AP).
+  - 2.4 GHz non-overlapping reuse: Channels 1, 6, 11 alternating across adjacent cells.
+  - 5 GHz non-overlapping (20/40 MHz): Channels 36, 40, 44, 48, 149, 153 (zero co-channel overlap).
+  - Wi-Fi 6 features: OFDMA (sub-channel RUs serve multiple phones/TXOP), MU-MIMO (spatial streams), BSS Colouring (spatial reuse).
+  - Bluetooth (BLE): Suits bedside pulse-oximeters/wearables (<10 m, low power); unsuitable for waiting-hall WAN/high-rate imaging.
+
+4.3 ATM vs Ethernet Overhead & Virtual Circuits:
+  - ATM cell (5B hdr / 53B total)     : 9.43% header overhead
+  - Ethernet (18B hdr+FCS / 1518B)    : 1.19% header overhead
+  - Virtual circuit IDs: Frame Relay = DLCI | ATM = VPI/VCI | MPLS = 20-bit Label.
+  - Clinic WAN choice: MPLS for predictable SLA latency/jitter & DiffServ QoS for live tele-consultations.
+
+--- Alternative Concept Analysis: Internet VPN vs MPLS for 3 Branch Clinics ---
+  - Internet IPsec VPN : Best-effort public internet (no BW/delay SLA, cannot enforce end-to-end QoS priority for video).
+  - Carrier MPLS       : Committed Information Rate (CIR), <20-30 ms SLA delay, honours EF/AF CoS queues.
+  - Acceptable premium : ~2x-3x monthly link cost justified when clinical video consultations cannot tolerate public jitter.

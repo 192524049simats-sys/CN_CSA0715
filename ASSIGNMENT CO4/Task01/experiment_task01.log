@@ -1,0 +1,23 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO4\Task01> python task01_office_redesign.py
+=== CO4 TASK 1: INVESTIGATING & REDESIGNING THE CA OFFICE NETWORK ===
+1.1 Cause of Each Staff Complaint:
+  - 'Moving a desk kills whole network': Coax bus breaks/unterminates when a BNC T-connector is unplugged ->
+    open impedance causes signal reflections across the entire shared backbone.
+  - 'Saving a file takes a minute at month-end': 30 PCs share one 10 Mbps half-duplex collision domain
+    (coax + Floor-2 hub); CSMA/CD collisions crush per-PC throughput to < 0.33 Mbps.
+  - 'Internet stops on router restart': Single consumer home router is a SPOF for NAT/DHCP/routing.
+  - Unnoticed weaknesses: (1) Single broadcast & collision domain; (2) Zero VLAN/security isolation;
+    (3) 10BASE2 185 m length limit & brittle troubleshooting.
+
+1.2 Bandwidth Per Computer (Before vs After):
+  - Before (10 Mbps shared coax/hub, 30 PCs) : <= 0.33 Mbps/PC (less with collisions)
+  - After  (1 Gbps Cat6 switched extended star): 1000 Mbps dedicated full-duplex/PC (3000x improvement)
+
+1.3 Concise Defence (<= 100 words):
+  (70 words) Replacing the coaxial bus and Floor-2 hub with a Cat6 extended-star topology and Gigabit switches gives each desk an isolated point-to-point link, eliminating desk-move outages and CSMA/CD collisions. Dedicated 1 Gbps full-duplex ports raise peak per-PC bandwidth from 0.33 Mbps to 1,000 Mbps, ending month-end server delays. Adding a business router with stateful firewall, dual-WAN failover, and UPS removes the home-router single point of failure and isolates accounting traffic cleanly.
+
+--- Alternative Concept Analysis: Single Wi-Fi 6 AP vs Switched Star ---
+  - 1 Wi-Fi 6 AP (1.2 Gbps PHY ~ 600 Mbps net shared half-duplex across 30 PCs) -> ~20 Mbps/PC with CSMA/CA contention.
+  - Switched Cat6 Star -> 1,000 Mbps full-duplex/PC (50x faster, zero airtime collisions) -> wins for month-end file saves.
+
+Saved topology diagram: C:\Users\19252\.gemini\antigravity\scratch\CN_CSA0715\ASSIGNMENT CO4\Task01\task01_office_redesign.png

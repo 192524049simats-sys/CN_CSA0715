@@ -1,0 +1,32 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO4\Task06> python task06_university_campus.py
+=== CO4 TASK 6: UNIVERSITY CAMPUS NETWORK DESIGN CHALLENGE ===
+Stage 1 — Building Sizing & Peak Traffic Estimates:
+  - Academic Block            : Users= 400 | Devices= 350 | Peak= 250.0 Mbps | Wired Staff + Wi-Fi 6
+  - Laboratories              : Users= 600 | Devices= 600 | Peak= 600.0 Mbps | 600 Wired PCs (1G)
+  - Library                   : Users= 250 | Devices= 300 | Peak= 200.0 Mbps | Wired Kiosks + Wi-Fi 6
+  - Hostels (3,000 students)  : Users=3000 | Devices=4500 | Peak=1800.0 Mbps | High-density Wi-Fi 6 + Wired
+  - Auditorium                : Users=1000 | Devices=1000 | Peak= 400.0 Mbps | High-density Wi-Fi 6
+  - Data Centre               : Users=  20 | Devices=  40 | Peak=2500.0 Mbps | LMS, ERP, DNS, NVR (East-West)
+
+Stage 2 & 3 — Architecture, VLANs, Media & WAN:
+  - Topology : 3-Tier Hierarchical Hybrid (Full-mesh 2x10G Core <-> Dual-homed OS2 SMF Distribution <-> Star Access).
+  - VLANs    : VLAN 10 Student (10.10.0.0/17), VLAN 20 Staff (10.10.128.0/19), VLAN 30 Guest (10.10.160.0/20), VLAN 40 CCTV (10.10.176.0/20).
+  - Media    : OS2 Single-Mode Fibre across 40-acre campus (>100m); Cat6A UTP horizontal (<90m) + Wi-Fi 6 (802.11ax).
+  - WAN      : Dual 10G/1G ISP uplinks with stateful firewall + BGP/floating failover.
+
+Stage 4 — Address Plan, BOM & Uplink Oversubscription Ratios:
+  - Labs (600 x 1G access)              : Edge=600.0G | Uplink=20.0G | Oversubscription = 30.0:1
+  - Academic + Library (650 x 1G/Wi-Fi) : Edge=650.0G | Uplink=20.0G | Oversubscription = 32.5:1
+  - Hostels (60 APs x 1G)               : Edge= 60.0G | Uplink=20.0G | Oversubscription = 3.0:1
+  - Data Centre (20 x 10G servers)      : Edge=200.0G | Uplink=40.0G | Oversubscription = 5.0:1
+
+Stage 5 — Packet Tracer Reduced Simulation (Core + 2 Buildings + Dual ISP):
+  - Config provided in campus_core_ospf.cfg (OSPF Area 0 + VLAN 10/20/30/40 + ACL Guest isolation + RSTP/LACP).
+  - Core-link failure test: Shutting Core-SW-1 -> Dist1 link triggers OSPF/RSTP failover to Core-SW-2 in < 1 s.
+
+--- Alternative Concept Analysis: Collapsed Core (Core + Distribution Combined) ---
+  - Devices saved: Eliminates 2 dedicated Core switches (saves ~Rs 8-12 Lakhs upfront).
+  - Blast radius : If a single collapsed-core switch fails, ALL 6 buildings (3,000 hostel students, 600 labs, DC) go dark!
+  - 10-Year Verdict: NOT worth saving 2 switches over 10 years for a 4,000+ user campus; keep dual redundant Core/Dist.
+
+Saved campus topology diagram: C:\Users\19252\.gemini\antigravity\scratch\CN_CSA0715\ASSIGNMENT CO4\Task06\task06_university_campus.png
