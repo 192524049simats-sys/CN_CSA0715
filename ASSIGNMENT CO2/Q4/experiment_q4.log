@@ -1,0 +1,31 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO2\Q4> python q4_bellman_ford.py
+converged after 4 rounds
+A  0  2  5  6 10
+B  2  0  3  4  8
+C  5  3  0  1  5
+D  6  4  1  0  4
+E 10  8  5  4  0
+
+--- Why A's best route to C is NOT direct ---
+  Direct link A-C = 7, whereas A-B-C = 2 + 3 = 5 (lower cumulative cost).
+
+--- Rerun with link C-D failed (cost = 99) ---
+converged after 3 rounds (C-D failed)
+A  0  2  5 10 14
+B  2  0  3  8 12
+C  5  3  0 11 15
+D 10  8 11  0  4
+E 14 12 15  4  0
+
+--- Count-to-Infinity on X-Y-Z (cost=1 each, Y-Z fails) ---
+  Round 1: Y->Z =  3, X->Z =  2 (counting to infinity!)
+  Round 2: Y->Z =  3, X->Z =  4 (counting to infinity!)
+  Round 3: Y->Z =  5, X->Z =  4 (counting to infinity!)
+  Round 4: Y->Z =  5, X->Z =  6 (counting to infinity!)
+  Round 5: Y->Z =  7, X->Z =  6 (counting to infinity!)
+  Round 6: Y->Z =  7, X->Z =  8 (counting to infinity!)
+  With Split Horizon + Poison Reverse: X advertises Z=INF (16 in RIP) back to Y -> Y immediately sets Y->Z=INF in Round 1!
+
+--- Alternative Concept Analysis: Link-State (OSPF) vs Distance-Vector on C-D Failure ---
+  - Link-State: C and D flood 1 LSA each across 6 links (~12 LSA messages), every router recomputes SPF in 1 flood + 1 Dijkstra (~ms).
+  - Distance-Vector: Exchanges full vectors with neighbours over multiple rounds (and risks count-to-infinity without poison reverse).

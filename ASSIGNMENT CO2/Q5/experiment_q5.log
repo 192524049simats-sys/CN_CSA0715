@@ -1,0 +1,31 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO2\Q5> python q5_ospf_dijkstra.py
+=== CO2 Q5: OSPF REFERENCE BANDWIDTH & DIJKSTRA SPT ===
+1. OSPF Cost Comparison (Default 100 Mbps vs Recommended 100,000 Mbps):
+   - 10 Mbps   : default cost = 10  | new cost (ref 100G) = 10000
+   - 100 Mbps  : default cost = 1   | new cost (ref 100G) = 1000
+   - 1 Gbps    : default cost = 1   | new cost (ref 100G) = 100
+   - 10 Gbps   : default cost = 1   | new cost (ref 100G) = 10
+   Problem with default 100 Mbps: floor(100/1000) and floor(100/10000) both clamp to 1,
+   making 100M, 1G and 10G indistinguishable; ECMP or fewer-hop 1G paths beat 10G paths!
+
+2. Dijkstra SPF Trace from R1 (Ref BW = 100,000 Mbps):
+   - Pop R1: total cost = 0  , parent = None
+   - Pop R3: total cost = 10 , parent = R1
+   - Pop R5: total cost = 20 , parent = R3
+   - Pop R6: total cost = 30 , parent = R5
+   - Pop R4: total cost = 40 , parent = R6
+   - Pop R2: total cost = 100, parent = R1
+
+   Path R1 -> R6 (Default 100M ref): R1 -> R2 -> R4 -> R6 (cost 3)
+   Path R1 -> R6 (New 100G ref)   : R1 -> R3 -> R5 -> R6 (cost 30, purely 10G links!)
+
+3. Single vs Multi-Area OSPF for State ISP:
+   - Use MULTIPLE areas (Area 0 core backbone + regional stub/NSSA areas) to isolate LSA flooding,
+     keep LSDB small, enable area-border route summarisation, and contain regional link-flap SPF runs.
+
+--- Alternative Concept Analysis: EIGRP vs IS-IS ---
+  - EIGRP classic metric : 1G = 2816, 10G = 512 (distinguishes 1G vs 10G by default, though Wide Metrics needed >10G)
+  - IS-IS default metric : Fixed cost 10 per interface regardless of speed (requires 'metric-style wide' + auto-cost/manual tuning)
+  - Winner without ref-BW change: EIGRP natively differentiates 1G and 10G out of the box.
+
+Saved SPT diagram: C:\Users\19252\.gemini\antigravity\scratch\CN_CSA0715\ASSIGNMENT CO2\Q5\q5_ospf_spt.png

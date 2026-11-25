@@ -1,0 +1,18 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO2\Q3> python q3_longest_prefix_static.py
+=== CO2 Q3: LONGEST-PREFIX MATCH & STATIC/FLOATING FAILOVER ===
+  Dst 10.1.2.200   -> Next Hop 192.0.2.13    (via 10.1.2.128/25  ) | All matches: [10.1.2.128/25, 10.1.2.0/24, 10.1.0.0/16, 10.0.0.0/8, 0.0.0.0/0]
+  Dst 10.1.2.100   -> Next Hop 192.0.2.9     (via 10.1.2.0/24    ) | All matches: [10.1.2.0/24, 10.1.0.0/16, 10.0.0.0/8, 0.0.0.0/0]
+  Dst 10.1.9.9     -> Next Hop 192.0.2.5     (via 10.1.0.0/16    ) | All matches: [10.1.0.0/16, 10.0.0.0/8, 0.0.0.0/0]
+  Dst 10.7.7.7     -> Next Hop 192.0.2.1     (via 10.0.0.0/8     ) | All matches: [10.0.0.0/8, 0.0.0.0/0]
+  Dst 8.8.8.8      -> Next Hop 198.51.100.1  (via 0.0.0.0/0      ) | All matches: [0.0.0.0/0]
+
+DCE Clock-Rate Removal Check (Packet Tracer Serial0/0/0):
+  - Removing 'clock rate 64000' on R1 (DCE) stops clocking pulses -> Serial0/0/0 status becomes 'up/down' (line protocol down),
+    causing the primary static route to be withdrawn and traffic to fail over to the AD 200 floating static route.
+
+--- Alternative Concept Analysis: Static Routes vs OSPF ---
+  - 2 Campuses  : Static+Floating = ~4 route lines; OSPF = ~6 lines (comparable).
+  - 5 Campuses  : Full-mesh static routes need ~5 x 4 x 2 (primary+backup) = 40+ manual lines;
+                  OSPF needs ~5 lines/router regardless of remote prefixes.
+  - Failover    : Floating static fails over instantly ONLY if link-down detected; fails to detect mid-path failure without IP SLA.
+                  OSPF detects link-down (<1 s carrier) or Hello dead timer (40 s default, <200 ms with BFD) end-to-end.

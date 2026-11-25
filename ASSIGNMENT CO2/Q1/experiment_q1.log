@@ -1,0 +1,36 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO2\Q1> python q1_address_audit.py
+=== CO2 Q1: SPOT THE INVALID ADDRESSES IN HOSPITAL GROUP ===
+  Admission PC    | IP: 172.16.45.200  /20 | GW: 172.16.32.1  
+    Network: 172.16.32.0 | Broadcast: 172.16.47.255 | Usable: 172.16.32.1 - 172.16.47.254
+    Verdict: VALID host address
+
+  Lab printer     | IP: 10.0.15.255    /21 | GW: 10.0.8.1     
+    Network: 10.0.8.0 | Broadcast: 10.0.15.255 | Usable: 10.0.8.1 - 10.0.15.254
+    Verdict: INVALID TRAP: configured IP equals the BROADCAST address!
+
+  X-ray server    | IP: 192.168.4.0    /23 | GW: 192.168.4.1  
+    Network: 192.168.4.0 | Broadcast: 192.168.5.255 | Usable: 192.168.4.1 - 192.168.5.254
+    Verdict: INVALID TRAP: configured IP equals the NETWORK address!
+
+  Clinic router   | IP: 203.0.113.10   /29 | GW: Public ISP   
+    Network: 203.0.113.8 | Broadcast: 203.0.113.15 | Usable: 203.0.113.9 - 203.0.113.14
+    Verdict: VALID host address
+
+Clinic /29 Exhaustion & PAT (NAT Overload) Table Example:
+  203.0.113.8/29 provides only 6 usable public IPs (203.0.113.9 - 203.0.113.14) for 18 devices.
+  With PAT/NAPT, two internal PCs both using source port 50000 get unique external ports:
+  +------------------------+------------------------+------------------------+
+  | Inside Local           | Inside Global (NAT)    | Outside Global         |
+  +------------------------+------------------------+------------------------+
+  | 192.168.1.10:50000     | 203.0.113.10:50000     | 93.184.216.34:443      |
+  | 192.168.1.11:50000     | 203.0.113.10:50001     | 93.184.216.34:443      |
+  +------------------------+------------------------+------------------------+
+
+Datagram vs Virtual-Circuit Switching:
+  - Datagram (IP)     : Each packet routed independently; multipath/rerouting causes out-of-order arrival.
+  - Virtual Circuit   : Fixed pre-established path/label (MPLS/ATM); packets follow identical path in order.
+
+--- Alternative Concept Analysis: Public /27 vs /29 + NAT ---
+  Public /27 usable IPs : 30 hosts (fits 18 devices directly with 12 spares)
+  Cost & Exposure       : Higher monthly IP lease cost; all 18 devices directly reachable/scannable on internet (needs strict stateful firewall).
+  NAT Problems Removed  : Fixes inbound P2P/VoIP/SIP ALG breakage, port-forwarding conflicts, and end-to-end IPsec/checksum issues.

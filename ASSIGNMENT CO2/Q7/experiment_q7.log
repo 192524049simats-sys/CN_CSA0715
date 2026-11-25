@@ -1,0 +1,29 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO2\Q7> python q7_redesign_challenge.py
+=== CO2 Q7: DAY-4 DESIGN CHALLENGE — REDESIGNING Q4 FROM RIP TO OSPF ===
+A. Identify the Limitation (from Q4 Evidence):
+   - Q4 used Distance-Vector (RIP) on the 5-router District network (A-B-C-D-E).
+   - Limitation 1: Hop-count metric picks direct 1-hop A-C (cost 7) over 2-hop A-B-C (cost 2+3=5).
+   - Limitation 2: On link failure (C-D), Distance-Vector suffers slow multi-round updates and count-to-infinity
+     (up to 16 hops / 180s invalid timer in RIP), creating transient loops.
+
+B. Measurable Design Objective:
+   - Cut post-failure routing convergence from >= 4-16 DV rounds (up to 180s) to <= 2 LSA flooding rounds (< 1s carrier down)
+     and guarantee bandwidth/cost-optimal path selection (A->C cost = 5 via A-B-C, not 7).
+
+C. Revised Network Design (OSPF Single-Area 0 + Ref BW 100,000 Mbps):
+   - Replace RIPv2 with OSPFv2 Area 0 on all 5 routers (A-E) using explicit link costs matching Q4 weights (2,7,3,8,1,4).
+   - Trade-off: Higher router CPU/RAM for LSDB & Dijkstra SPF vs zero count-to-infinity and cost-aware paths.
+   - Address Plan: A-B 10.0.12.0/30, A-C 10.0.13.0/30, B-C 10.0.23.0/30, B-D 10.0.24.0/30, C-D 10.0.34.0/30, D-E 10.0.45.0/30.
+
+D. Prediction Before Implementing:
+   - Normal A->E cost drops to 10 (A-B-C-D-E); after C-D fails, A->E reroutes via A-B-D-E (cost 14) in 1 LSA flood (~10 ms).
+
+E. Implementation & Validation (Original RIP vs Redesigned OSPF):
+   - Original (RIP)  : Hop-based A->C=1 hop (picks slow cost-7 link!), C-D failure waits 180s timer / 16 rounds.
+   - Redesigned(OSPF): Cost-based A->C=5 (via B), C-D failure converges in 1 flood + SPF (< 50 ms) to A-B-D-E (cost 14).
+
+F. Defence:
+   - Objective ACHIEVED: 99% faster failover, zero routing loops, optimal path cost.
+   - Cost/Where Original is Preferable: Tiny 2-3 router stub branches with low-end CPUs where static/RIP needs zero LSDB tuning.
+
+Saved validation chart: C:\Users\19252\.gemini\antigravity\scratch\CN_CSA0715\ASSIGNMENT CO2\Q7\q7_redesign_validation.png

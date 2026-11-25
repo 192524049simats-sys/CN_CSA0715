@@ -1,0 +1,32 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO2\Q2> python q2_vlsm_campus.py
+Labs       192.168.10.0/25  hosts 192.168.10.1 - 192.168.10.126  bcast 192.168.10.127
+Staff      192.168.10.128/26  hosts 192.168.10.129 - 192.168.10.190  bcast 192.168.10.191
+Library    192.168.10.192/27  hosts 192.168.10.193 - 192.168.10.222  bcast 192.168.10.223
+WAN link   192.168.10.224/30  hosts 192.168.10.225 - 192.168.10.226  bcast 192.168.10.227
+next free address: 192.168.10.228
+
+--- Verification with Python ipaddress module ---
+  Labs       192.168.10.0/25    mask=255.255.255.128 first=192.168.10.1 last=192.168.10.126 bcast=192.168.10.127 usable=126
+  Staff      192.168.10.128/26  mask=255.255.255.192 first=192.168.10.129 last=192.168.10.190 bcast=192.168.10.191 usable=62
+  Library    192.168.10.192/27  mask=255.255.255.224 first=192.168.10.193 last=192.168.10.222 bcast=192.168.10.223 usable=30
+  WAN link   192.168.10.224/30  mask=255.255.255.252 first=192.168.10.225 last=192.168.10.226 bcast=192.168.10.227 usable=2
+
+Equal-size (FLSM) Comparison on 192.168.10.0/24:
+  - 4 equal /26 subnets give only 62 usable hosts each -> FAILS Labs (100 hosts)!
+  - /25 gives 126 usable hosts, but only 2 subnets exist in /24 -> FAILS 4-subnet requirement!
+
+Hostel Trap (60 hosts added 6 months later):
+  - Remaining space in 192.168.10.0/24: 192.168.10.228 - 192.168.10.255 (28 addresses).
+  - 60 hosts needs /26 (64 addresses). Cannot fit without renumbering!
+  - Smallest change: Expand college block to 192.168.10.0/23 (adds 192.168.11.0/24) and assign 192.168.11.0/26 to Hostel (zero renumbering).
+
+Route Summarisation:
+  - Summary of 172.16.8.0/24 .. 172.16.11.0/24 : 172.16.8.0/22
+  - Erroneous 172.16.8.0/21 after adding .12.0/24 also advertises non-owned blocks: ['172.16.13.0/24', '172.16.14.0/24', '172.16.15.0/24']
+
+--- Alternative Concept Analysis: Smallest-First VLSM Allocation ---
+  WAN link   (needs   4 IPs, /30) at 192.168.10.0 -> aligned=True
+  Library    (needs  32 IPs, /27) at 192.168.10.4 -> aligned=False
+  Staff      (needs  64 IPs, /26) at 192.168.10.36 -> aligned=False
+  Labs       (needs 128 IPs, /25) at 192.168.10.100 -> aligned=False
+  Result: Smallest-first leaves Library/Staff/Labs misaligned (e.g. /25 cannot start at .100!), causing overlaps or wasted gaps.

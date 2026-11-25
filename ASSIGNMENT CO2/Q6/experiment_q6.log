@@ -1,0 +1,27 @@
+PS C:\CN_CSA0715\ASSIGNMENT CO2\Q6> python q6_ipv6_sdn.py
+=== CO2 Q6: IPv6, ICMP TRACEROUTE, MULTICAST & OPENFLOW SDN ===
+1. IPv6 Shortest Form:
+   - Full       : 2001:0db8:0000:0000:0000:ff00:0042:8329
+   - Compressed : 2001:db8::ff00:42:8329
+   - MAC 00:1A:2B:3C:4D:5E -> EUI-64 IID = 021a:2bff:fe3c:4d5e (Link-local: fe80::021a:2bff:fe3c:4d5e)
+
+2. How Traceroute Uses TTL & ICMP Time Exceeded:
+   - Probes start with IP TTL=1, then 2, 3... Each router decrements TTL by 1;
+     when TTL hits 0, the router drops the probe and returns ICMP Type 11 Code 0 (Time Exceeded),
+     revealing its IP address and per-hop RTT until the destination replies (ICMP Port Unreachable / Echo Reply).
+
+3. Multicast Camera Stream:
+   - Group 239.1.2.3 -> Multicast MAC = 01:00:5e:01:02:03
+   - Camera sends ONE stream; switches/routers running IGMP snooping & PIM replicate packets
+     only at branching forks toward subscribed control rooms (saving upstream camera & backbone bandwidth).
+
+4. OpenFlow Switch Rule Evaluation:
+   - HTTP to 10.5.1.1 (TCP/80) -> matched priority 200 (dst 10.5.0.0/16) -> forward -> port 3
+   - SSH  to 10.6.1.1 (TCP/22) -> matched priority 0 (default) -> drop
+   - SDN Worth Adopting? YES for smart city: centralised traffic engineering, dynamic camera-stream steering,
+     and programmable QoS/isolation across 2M sensors, provided redundant controllers prevent SPOF.
+
+--- Alternative Concept Analysis: Native IPv6 vs Dual-Stack vs 6in4 Tunnel ---
+  - Native IPv6  : 100 B payload + 40 B IPv6 = 140 B
+  - 6in4 Tunnel  : +20 B outer IPv4 header -> 160 B (+14.29% packet size, 20 extra bytes; 20% of 100B sensor payload)
+  - Verdict      : Start with Dual-Stack at gateways + Native IPv6 in new sensor/camera segments to avoid 6in4 MTU/encapsulation overhead.
