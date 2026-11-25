@@ -1,0 +1,22 @@
+PS C:\CN_CSA0715\ASSSIGNMENT CO5\TaskB1> python taskb1_real_network.py
+packet loss 20.0 %
+average delay 42.9 ms, jitter 6.6 ms
+throughput 345.9 kbps
+VoIP quality: poor
+
+--- Trace Without Lost Packets (8/10 packets) ---
+  loss=0.0%, delay=42.9 ms, jitter=6.6 ms, thr=345.9 kbps -> VoIP quality: acceptable
+
+--- B1.1 Real Ping Measurements to 3 Servers at Different Distances ---
+  Local/Edge Anycast (Cloudflare)  | RTTs=[9, 8, 11, 7] ms | min=7 ms | jitter=2.7 ms | loss=0%
+  Regional/Global (Google DNS)     | RTTs=[8, 10, 11, 10] ms | min=8 ms | jitter=1.3 ms | loss=0%
+  International (github.com)       | RTTs=[26, 27, 28, 27] ms | min=26 ms | jitter=1.0 ms | loss=0%
+
+--- B1.2 Loopback TCP & UDP Throughput Benchmark (iperf3-equivalent Socket Test) ---
+  Localhost TCP stream (8 MB): 6,753.9 Mbps (far exceeds A1.3 >= 20 Mbps target)
+
+--- Alternative Concept Analysis: One-Way Delay vs RTT/2 on Asymmetric Path ---
+  - Example: Download = 100 Mbps, Upload = 2 Mbps; 1,500 B ACK vs 1,500 B probe:
+    Suppose propagation = 10 ms each way, upload serialization/queue = 25 ms, download = 2 ms.
+  - True one-way download delay = 12 ms | True one-way upload = 35 ms | RTT = 47 ms.
+  - Halving RTT estimates 47/2 = 23.5 ms (overestimates download by +96% and underestimates upload by -33%!).

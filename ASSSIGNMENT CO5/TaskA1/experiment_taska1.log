@@ -1,0 +1,26 @@
+PS C:\CN_CSA0715\ASSSIGNMENT CO5\TaskA1> python taska1_delay_bdp.py
+=== CO5 TASK A1: WHERE DOES THE DELAY COME FROM? ===
+A1.1 — 1,500-byte Packet over 2,000 km, 100 Mbps links, 3 Routers (4 links):
+  - Transmission delay (4 links x 0.12 ms) :  0.480 ms
+  - Propagation delay (2,000 km / 2e8 m/s)  : 10.000 ms  (81.4% -> DOMINANT)
+  - Queuing delay (3 routers x 0.5 ms)      :  1.500 ms
+  - Processing delay (3 routers x 0.1 ms)   :  0.300 ms
+  - Total one-way delay                     : 12.280 ms
+  Upgrading all links to 1 Gbps cuts tx to 0.048 ms -> total 11.848 ms (saves only 3.5%!).
+
+A1.2 — Bandwidth-Delay Product (1 Gbps link, 80 ms RTT):
+  - BDP = 1 Gbps x 0.080 s = 80 Mb = 10.0 MB in flight
+  - 64 KB TCP window sends max 65,535 B per 80 ms RTT -> throughput = 6.553 Mbps (0.655% of 1 Gbps!)
+
+A1.3 — Application SLA Targets & Measurement Tools:
+  - Live Video     : Delay <= 150 ms  | Jitter <= 30 ms  | Loss <= 1%    | Thr >= 2.5 Mbps | Tool: iperf3 + Wireshark RTP + ping
+  - Live Voice     : Delay <= 150 ms  | Jitter <= 20 ms  | Loss <= 1%    | Thr >= 80 kbps  | Tool: ping + Wireshark RTP + NS-3
+  - Recorded Video : Delay <= 1-2 s   | Jitter N/A (buf) | Loss <= 0.5%  | Thr >= 5 Mbps   | Tool: iperf3 + curl/browser DevTools
+  - E-mail         : Delay <= 5 s     | Jitter N/A       | Loss 0% (TCP) | Thr >= 1 Mbps   | Tool: SMTP/IMAP probe + SNMP
+  - File Downloads : Delay Best effort | Jitter N/A       | Loss 0% (TCP) | Thr >= 20 Mbps  | Tool: iperf3 (window scaling) + SNMP
+  Active vs Passive: Active injects synthetic probes (ping/iperf3) to measure latency/loss anytime;
+                     Passive observes live production traffic (Wireshark/SNMP) with zero overhead.
+
+--- Alternative Concept Analysis: Passive-Only Monitoring ---
+  - Can obtain : Interface utilisation, error/drop counters (SNMP), TCP retransmits & app response times (PCAP).
+  - Would miss : Baseline RTT/jitter during quiet hours, proactive SLA alerts before students log in, and path hop breakdown.

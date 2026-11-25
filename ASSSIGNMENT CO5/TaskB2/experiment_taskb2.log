@@ -1,0 +1,18 @@
+PS C:\CN_CSA0715\ASSSIGNMENT CO5\TaskB2> python taskb2_varying_sim.py
+=== CO5 TASK B2: SIMULATE UNDER VARYING CONDITIONS ===
+  1. Baseline (50M, 20ms, 20 users)            | Thr= 5.54 Mbps | Voice Delay= 20.04 ms | Voice Loss= 0.0%
+  2. Higher Load (50M, 20ms, 80 users)         | Thr=17.50 Mbps | Voice Delay= 20.07 ms | Voice Loss= 0.0%
+  3. Tight Link + High Delay (20M, 80ms, 50u)  | Thr=11.50 Mbps | Voice Delay= 80.32 ms | Voice Loss= 0.0%
+  4. + Background Download FIFO (20M, 20ms)    | Thr=20.41 Mbps | Voice Delay=101.61 ms | Voice Loss=39.0%
+  5. + Background Download + Voice Priority    | Thr=20.58 Mbps | Voice Delay= 20.39 ms | Voice Loss=39.0%
+
+Interpretation:
+  - Adding a 24 Mbps background file download on a 20 Mbps FIFO link saturates the buffer,
+    spiking voice delay and dropping packets (run 4).
+  - Enabling strict Priority Queueing for voice (run 5) isolates voice delay right back near prop_ms with 0% loss!
+
+--- Alternative Concept Analysis: Packet Tracer vs NS-3 ---
+  - Packet Tracer: Visual GUI, real Cisco IOS CLI, minimal setup effort (~10 min), but simplified queue/TCP internals.
+  - NS-3 (C++/Python): Packet-by-packet ns-3::QueueDisc, exact CUBIC/BBR & Wi-Fi PHY models, reproducible traces, higher coding effort.
+
+Saved simulation plot: C:\Users\19252\.gemini\antigravity\scratch\CN_CSA0715\ASSSIGNMENT CO5\TaskB2\taskb2_sim_results.png

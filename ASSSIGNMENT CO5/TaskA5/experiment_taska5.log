@@ -1,0 +1,19 @@
+PS C:\CN_CSA0715\ASSSIGNMENT CO5\TaskA5> python taska5_dos_protection.py
+=== CO5 TASK A5: HOW EASY IS IT TO TAKE THE SITE DOWN? ===
+A5.1 — SYN Flood & DNS Amplification:
+  - Backlog = 1024 half-open connections | Hold time = 60 s
+  - Attack rate to exhaust server = 1024 / 60 = 17.07 SYN packets/sec (~18 SYN/s!)
+  - How SYN cookies fix it: Server computes cryptographic ISN = hash(5-tuple, secret, MSS) and drops half-open
+    state; TCB memory is allocated ONLY when client returns a valid ACK (so queue never fills).
+  - Why DNS amplification is hard to block at victim: Attackers spoof victim's IP to open resolvers ->
+    50-byte queries reflect 3,000+ byte ANY/TXT replies (50-70x amplification) that saturate the victim's
+    access pipe BEFORE packets even reach the victim's firewall.
+
+A5.2 — Layered Protection Plan:
+  - SYN Flood         -> Enable TCP SYN Cookies on OS/load balancer + SYN proxy.
+  - DNS Amplification -> Upstream Anycast Scrubbing Service / ISP BGP FlowSpec (drops junk before access link).
+  - L7 HTTP Flood     -> CDN (offloads static/recorded video) + WAF / IP rate limiting.
+
+--- Alternative Concept Analysis: Buying 4x Server Capacity ---
+  - 4x servers absorb only 4 x 17.07 = 68.27 SYN packets/sec (~69 SYN/s).
+  - Verdict: NOT realistic — a single laptop or small botnet easily exceeds 100,000+ SYN/s and saturates the WAN link.

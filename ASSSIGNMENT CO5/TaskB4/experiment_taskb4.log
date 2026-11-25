@@ -1,0 +1,25 @@
+PS C:\CN_CSA0715\ASSSIGNMENT CO5\TaskB4> python taskb4_final_decision.py
+=== CO5 TASK B4: FINAL ENGINEERING DECISION (2x SCALE + INTERCONTINENTAL) ===
+B4.1 — Predicting Effect at 2x Load & Intercontinental RTT:
+  - Intercontinental propagation (e.g., Chennai <-> London/US ~8,000-14,000 km fibre):
+    One-way prop jumps from 10 ms (2,000 km) to 40-70 ms (RTT = 80-180 ms).
+  - Without upgrades at 2x students: Evening queueing pushes live voice/video > 200-300 ms (violates 150 ms SLA),
+    and 64 KB TCP window @ 180 ms RTT drops download speed to 65535*8/0.18 = 2.91 Mbps!
+  - With 2x user rate on old M/M/1 link (950 -> >1000 pkt/s): queue goes UNSTABLE (infinite buildup, >5% packet loss).
+
+B4.2 — Security & Rate-Limit Check at 2x Normal Load:
+  - Firewall ACL (allow 443, admin-only SSH 22, deny default) scales statelessly with zero false drops.
+  - HTTP rate limits must scale from baseline 1x threshold to 2.5x headroom per edge PoP + SYN cookies enabled,
+    while Anycast scrubbing absorbs volumetric DNS amplification (>10 Gbps) upstream.
+
+B4.3 — Final Recommended Architecture (Quoting Numbers from Tasks A1-B3):
+  1. Regional SFU + Multi-Continent PoPs    : Cuts intercontinental RTT from 180 ms to <40 ms (keeps live classes <150 ms SLA).
+  2. CDN for Recorded Video & 4 GB Packages : Cuts 4 GB distribution from 6,400 s (CS) / 1,280 s (P2P) to 640 s at 50 Mbps edge.
+  3. DiffServ LLQ/EF QoS + 2x Link Capacity : Keeps voice delay <25 ms (vs >150 ms FIFO saturation in B2) during heavy backups.
+  4. TCP Window Scaling (>= 10 MB) + BBR    : Lifts 80-180 ms WAN throughput from 2.9-6.5 Mbps (64 KB cap) to full 1 Gbps BDP.
+  5. SYN Cookies + WAF + Anycast Scrubbing  : Defeats 18 SYN/s queue exhaustion (A5), L7 floods (B3), and SSH exposure (A4).
+
+--- Alternative Concept Analysis: Regional Servers vs Serving All from India ---
+  - Measured India->Local RTT (~15-30 ms) vs India->US/EU RTT (~150-220 ms): Regional SFUs save ~120-190 ms RTT (~60-95 ms 1-way).
+  - Verdict: Delay reduction pushes live intercontinental video from unusable (>200 ms) into <100 ms interactive range;
+             coupled with async CDN origin sync for recorded lectures, the improvement easily justifies sync cost.

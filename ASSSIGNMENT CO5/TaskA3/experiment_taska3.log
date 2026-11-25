@@ -1,0 +1,23 @@
+PS C:\CN_CSA0715\ASSSIGNMENT CO5\TaskA3> python taska3_p2p_voip.py
+=== CO5 TASK A3: P2P, VoIP & OVERLAYS BY THE NUMBERS ===
+A3.1 — Distributing 4 GB (32,000 Mb) to N=20 Regional Centres:
+  - Client-Server min time : max(20*32000/100, 32000/50) = 6400 s (106.7 min)
+  - Peer-to-Peer min time  : max(320, 640, 640000/500)  = 1280 s (21.3 min) -> 5.0x faster!
+  (Note: Using 4 GiB = 32,768 Mb gives CS = 6,553.6 s and P2P = 1,310.7 s, same 5.0x speedup.)
+  Why P2P wins: Each centre contributes 20 Mbps upload (total 500 Mbps vs 100 Mbps server).
+  When P2P would NOT win: Asymmetric residential links with near-zero upload, NAT blocks, or N=1.
+
+A3.2 — G.711 VoIP Call Real Bandwidth (20 ms packets, 40B IP/UDP/RTP):
+  - Packets/sec      : 50 pkt/s | Speech = 160 B + 40 B headers = 200 B/pkt
+  - Real BW/direction: 80.0 kbps (+25% header overhead over 64 kbps codec)
+  - Calls on 2 Mbps  : 25 calls per direction (before L2 Ethernet/PPP headers)
+  - SIP vs RTP       : SIP handles signalling (INVITE/ACK/BYE, session setup & codec negotiation);
+                       RTP carries the actual real-time audio stream with timestamps & seq numbers.
+
+A3.3 — Overlay Networks (CDN & VPN):
+  - CDN caches recorded lectures/packages at regional edge PoPs over the public Internet -> fixes evening congestion/DoS.
+  - VPN builds encrypted IPsec/WireGuard tunnels over public Internet -> secures inter-office/admin traffic.
+
+--- Alternative Concept Analysis: CDN with 1 Gbps Edge Server in Each Region ---
+  - Download time from local 1 Gbps CDN edge (limited by centre 50 Mbps down): 640 s (10.7 min, 2x faster than P2P!)
+  - Trade-off: Higher recurring CDN cost vs much higher reliability, zero NAT traversal issues, and built-in DDoS absorption.

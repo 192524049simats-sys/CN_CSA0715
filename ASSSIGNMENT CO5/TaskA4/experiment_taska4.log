@@ -1,0 +1,32 @@
+PS C:\CN_CSA0715\ASSSIGNMENT CO5\TaskA4> python taska4_firewall_tls.py
+tcp   443   from 49.37.2.8  -> allow
+tcp   22    from 10.1.4.20  -> allow
+tcp   22    from 49.37.2.8  -> deny
+udp   53    from 10.1.4.20  -> allow
+tcp   80    from 49.37.2.8  -> deny
+icmp  None  from 49.37.2.8  -> deny
+
+--- Follow-up: Swapping Rules 2 and 3 (Shadowing Bug) ---
+tcp   443   from 49.37.2.8  -> allow
+tcp   22    from 10.1.4.20  -> deny
+tcp   22    from 49.37.2.8  -> deny
+udp   53    from 10.1.4.20  -> allow
+tcp   80    from 49.37.2.8  -> deny
+icmp  None  from 49.37.2.8  -> deny
+  Effect: ('deny', 'tcp', 22, None) now shadows ('allow', 'tcp', 22, '10.1.'), blocking admin SSH from 10.1.4.20!
+
+--- Audit of the Web Server's Original Rule Set ---
+  1 allow tcp any -> 443 | 2 allow tcp any -> 22 | 3 deny tcp any -> 22 | 4 allow tcp 10.1.0.0/16 -> 22
+  - Shadowed rules : Rules 3 and 4 can NEVER take effect because Rule 2 permits ALL TCP port 22.
+  - Security hole  : SSH (port 22) is exposed to the entire public Internet!
+  - Corrected order: Move Rule 4 (allow 10.1.0.0/16 -> 22) ABOVE Rule 3 (deny any -> 22) and delete Rule 2.
+  - Firewall types : Stateless inspects per-packet 5-tuple; Stateful tracks connection state/return traffic;
+                     Application Proxy terminates L7 (HTTP/DNS) to inspect payloads.
+
+--- A4.1 TLS/SSL on Cafe Wi-Fi ---
+  - Certificate proves server domain ownership/public key via trusted CA; Handshake agrees cipher suite & symmetric session keys.
+  - Attacker sees: Client/Server IPs, port 443, TLS SNI hostname, packet sizes/timing; CANNOT see URL paths, cookies, passwords, or HTML.
+
+--- Alternative Concept Analysis: Cloud WAF ---
+  - Stops L7 attacks packet filter misses: (1) SQL Injection / XSS payloads; (2) HTTP credential stuffing / L7 floods.
+  - Extra delay: ~5-25 ms TLS termination + inspection hop (offset by edge caching); YES, company needs WAF for public portal.

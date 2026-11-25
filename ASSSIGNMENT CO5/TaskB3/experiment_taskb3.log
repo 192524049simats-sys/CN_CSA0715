@@ -1,0 +1,29 @@
+PS C:\CN_CSA0715\ASSSIGNMENT CO5\TaskB3> python taskb3_stress_attack.py
+=== CO5 TASK B3: PERFORMANCE UNDER STRESS & ISOLATED LAB FLOOD ===
+B3.1 — TCP Throughput (Mathis, MSS=1460B) & VoIP Quality (MOS) Across Delay & Loss:
+  RTT= 50 ms, Loss= 1% -> TCP Thr= 2.850 Mbps | Voice MOS=4.33 (Good)
+  RTT= 50 ms, Loss= 5% -> TCP Thr= 1.275 Mbps | Voice MOS=4.00 (Good)
+  RTT= 50 ms, Loss=10% -> TCP Thr= 0.901 Mbps | Voice MOS=3.45 (Fair)
+  RTT=150 ms, Loss= 1% -> TCP Thr= 0.950 Mbps | Voice MOS=4.26 (Good)
+  RTT=150 ms, Loss= 5% -> TCP Thr= 0.425 Mbps | Voice MOS=3.91 (Good)
+  RTT=150 ms, Loss=10% -> TCP Thr= 0.300 Mbps | Voice MOS=3.33 (Fair)
+  RTT=300 ms, Loss= 1% -> TCP Thr= 0.475 Mbps | Voice MOS=3.60 (Fair)
+  RTT=300 ms, Loss= 5% -> TCP Thr= 0.212 Mbps | Voice MOS=3.10 (Fair)
+  RTT=300 ms, Loss=10% -> TCP Thr= 0.150 Mbps | Voice MOS=2.44 (Poor)
+
+B3.2 — Window Size vs BDP (from A1.2: 1 Gbps, 80 ms RTT -> BDP = 10 MB):
+  - Small window (64 KB)  :   6.553 Mbps (matches A1.2 calculation 6.55 Mbps)
+  - Large window (8 MB)   : 838.861 Mbps (83.9% of 1 Gbps)
+  - Full-BDP window (10MB): 1000.000 Mbps (100% link utilisation)
+
+B3.3 — Isolated Localhost Firewall Rules & Flood Test:
+  - Applied A4 corrected rule order: allow 443, allow 10.1.0.0/16->22, deny any->22, allow 53, deny any.
+  - No Rate Limit           : 200 OK=40, 429 Blocked= 0, Avg Response= 29.49 ms
+  - Rate Limited (30 req/s) : 200 OK=28, 429 Blocked=12, Avg Response= 11.60 ms
+
+B3.4 & Alternative Concept — Strict Priority (DiffServ EF) vs Weighted Fair Queuing (WFQ):
+  - DiffServ EF (Strict Priority): Voice stays < 25 ms at all loads, slight TCP starvation only if voice >30%.
+  - WFQ: Protects downloads from starvation (~70% share) at cost of ~5-15 ms extra voice jitter.
+  - Verdict: Use DiffServ EF (capped via LLQ police <= 30% link) for Voice/Video + WFQ/AF for Downloads.
+
+Saved stress plot: C:\Users\19252\.gemini\antigravity\scratch\CN_CSA0715\ASSSIGNMENT CO5\TaskB3\taskb3_stress_tradeoff.png
